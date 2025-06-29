@@ -1,0 +1,187 @@
+---
+title: Port link-type
+---
+
+# การกำหนดค่า Interface
+
+## โหมด Access
+
+โหมด Access ใช้สำหรับเชื่อมต่ออุปกรณ์ปลายทาง เช่น คอมพิวเตอร์ เครื่องพิมพ์ และโทรศัพท์ IP ในโหมดนี้ พอร์ตของสวิตช์สามารถอยู่ใน VLAN ได้เพียง VLAN เดียวเท่านั้น
+
+### 1\. เข้าสู่ System View (โหมด Privileged EXEC)
+
+```
+<Switch> system-view
+```
+
+หลังจากเข้าสู่ System View แล้ว คุณจะสามารถกำหนดค่าสวิตช์ได้
+
+### 2\. เข้าสู่ Interface View
+
+```
+[Switch] interface GigabitEthernet 0/0/1
+```
+
+### 3\. กำหนดประเภทลิงก์เป็น Access
+
+```
+[Switch-GigabitEthernet0/0/1] link-type access
+```
+
+### 4\. กำหนด VLAN ID
+
+```
+[Switch-GigabitEthernet0/0/1] port default vlan 1
+```
+
+> โดยค่าเริ่มต้น VLAN ID คือ 1 คุณสามารถเปลี่ยนเป็น VLAN ID อื่นได้ตามความต้องการ
+
+### 5\. บันทึกการกำหนดค่า
+
+```
+[Switch-GigabitEthernet0/0/1] quit
+[Switch] quit
+<Switch> save
+Are you sure to save the configuration? [Y/N]: y
+Configuration is saved.
+```
+
+> คุณสามารถกด `Ctrl+Z` เพื่อออกจากโหมดการกำหนดค่าได้
+
+### 6\. ตรวจสอบการกำหนดค่า
+
+```
+<Switch> display current-configuration interface GigabitEthernet 0/0/1
+```
+
+```
+#
+interface GigabitEthernet0/0/1
+ port link-type access
+ port default vlan 1
+#
+```
+
+## โหมด Trunk
+
+โหมด Trunk ใช้สำหรับเชื่อมต่อสวิตช์และเราเตอร์ ในโหมดนี้ พอร์ตของสวิตช์สามารถอยู่ในหลาย VLAN ได้
+
+### 1\. เข้าสู่ System View (โหมด Privileged EXEC)
+
+```
+<Switch> system-view
+```
+
+### 2\. เข้าสู่ Interface View
+
+```
+[Switch] interface GigabitEthernet 0/0/1
+```
+
+### 3\. กำหนดประเภทลิงก์เป็น Trunk
+
+```
+[Switch-GigabitEthernet0/0/1] link-type trunk
+```
+
+### 4\. กำหนด VLAN ที่อนุญาตให้ผ่าน
+
+```
+[Switch-GigabitEthernet0/0/1] port trunk allow-pass vlan 10 20 30
+```
+
+> คุณสามารถระบุ VLAN ที่อนุญาตให้ผ่านพอร์ต Trunk นี้ได้ ตัวอย่างนี้อนุญาตให้ VLAN 10, 20 และ 30 ผ่านได้
+
+### 5\. บันทึกการกำหนดค่า
+
+```
+[Switch-GigabitEthernet0/0/1] quit
+[Switch] quit
+<Switch> save
+Are you sure to save the configuration? [Y/N]: y
+Configuration is saved.
+```
+
+> คุณสามารถกด `Ctrl+Z` เพื่อออกจากโหมดการกำหนดค่าได้
+
+### 6\. ตรวจสอบการกำหนดค่า
+
+```
+<Switch> display current-configuration interface GigabitEthernet 0/0/1
+```
+
+```
+#
+interface GigabitEthernet0/0/1
+ port link-type trunk
+ port trunk allow-pass vlan 10 20 30
+#
+```
+
+## โหมด Hybrid
+
+โหมด Hybrid เป็นการผสมผสานระหว่างโหมด Access และ Trunk ในโหมดนี้ พอร์ตของสวิตช์สามารถอยู่ในหลาย VLAN ได้ และยังสามารถกำหนดค่าเพื่ออนุญาตให้เฉพาะ VLAN ที่ระบุผ่านได้ด้วย
+โหมด Hybrid มีประโยชน์สำหรับการเชื่อมต่ออุปกรณ์ที่ต้องการทั้งทราฟฟิกแบบ Tagged และ Untagged เช่น โทรศัพท์ IP หรือ Wireless Access Point
+
+### 1\. เข้าสู่ System View (โหมด Privileged EXEC)
+
+```
+<Switch> system-view
+```
+
+### 2\. เข้าสู่ Interface View
+
+```
+[Switch] interface GigabitEthernet 0/0/1
+```
+
+### 3\. กำหนดประเภทลิงก์เป็น Hybrid
+
+```
+[Switch-GigabitEthernet0/0/1] port link-type hybrid
+```
+
+### 4\. กำหนด VLAN ที่อนุญาตให้ผ่าน
+
+```
+[Switch-GigabitEthernet0/0/1] port hybrid pvid vlan 10
+[Switch-GigabitEthernet0/0/1] port hybrid untagged vlan 10
+[Switch-GigabitEthernet0/0/1] port hybrid tagged vlan 20 30
+```
+
+> คุณสามารถระบุ VLAN ที่อนุญาตสำหรับพอร์ต Hybrid นี้ได้ ตัวอย่างนี้ กำหนดให้ VLAN 10 เป็น PVID (Port VLAN ID) และ Untagged ในขณะที่ VLAN 20 และ 30 เป็น Tagged
+
+### 5\. กำหนด Default VLAN
+
+```
+[Switch-GigabitEthernet0/0/1] port hybrid untagged vlan 1
+```
+
+> คุณสามารถระบุ Default VLAN สำหรับทราฟฟิกแบบ Untagged ได้ ตัวอย่างนี้ กำหนดให้ VLAN 1 เป็นค่าเริ่มต้น
+
+### 6\. บันทึกการกำหนดค่า
+
+```
+[Switch-GigabitEthernet0/0/1] quit
+[Switch] quit
+<Switch> save
+Are you sure to save the configuration? [Y/N]: y
+Configuration is saved.
+```
+
+> คุณสามารถกด `Ctrl+Z` เพื่อออกจากโหมดการกำหนดค่าได้
+
+### 7\. ตรวจสอบการกำหนดค่า
+
+```
+<Switch> display current-configuration interface GigabitEthernet 0/0/1
+```
+
+```
+#
+interface GigabitEthernet0/0/1
+ port link-type hybrid
+ port hybrid allow-pass vlan 10 20 30
+ port hybrid untagged vlan 1
+#
+```
