@@ -1,0 +1,84 @@
+---
+title: DHCP Server
+---
+
+import { Steps } from 'nextra/components'
+
+# DHCP Server
+
+DHCP Server ย่อมาจาก Dynamic Host Configuration Protocol Server คือ เซิร์ฟเวอร์ที่ทำหน้าที่แจกจ่าย IP Address และข้อมูลการตั้งค่าเครือข่ายอื่นๆ ที่จำเป็นให้กับอุปกรณ์ต่างๆ (เช่น คอมพิวเตอร์ โทรศัพท์มือถือ ปริ้นเตอร์) ที่เชื่อมต่อเข้าสู่เครือข่ายโดยอัตโนมัติ
+
+### ทำไมถึงต้องมี DHCP Server?
+
+ลองจินตนาการถึงเครือข่ายขนาดใหญ่ที่มีอุปกรณ์เป็นร้อยเป็นพันตัว ถ้าไม่มี DHCP Server ผู้ดูแลระบบจะต้องกำหนด IP Address, Subnet Mask, Default Gateway และ DNS Server ให้กับอุปกรณ์แต่ละตัวด้วยตัวเอง ซึ่งเป็นงานที่ยุ่งยากและเสียเวลามาก แถมยังเสี่ยงต่อการเกิดข้อผิดพลาด เช่น IP Address ซ้ำกัน ทำให้เครือข่ายมีปัญหาได้
+
+### DHCP Server เข้ามาช่วยแก้ปัญหานี้โดย
+
+- **แจก IP Address อัตโนมัติ:** เมื่ออุปกรณ์ใหม่เชื่อมต่อเข้าสู่เครือข่าย (หรืออุปกรณ์เดิมเปิดเครื่อง) อุปกรณ์นั้นจะร้องขอ IP Address จาก DHCP Server
+- **ป้องกัน IP Address ซ้ำซ้อน:** DHCP Server จะมีรายการ IP Address ที่ว่างอยู่และคอยตรวจสอบไม่ให้มีการแจก IP Address ซ้ำกัน
+- **แจกข้อมูลเครือข่ายอื่นๆ:** นอกจาก IP Address แล้ว DHCP Server ยังสามารถแจกจ่ายข้อมูลที่จำเป็นอื่นๆ เช่น Subnet Mask, Default Gateway (เกตเวย์หลักของเครือข่าย) และ DNS Server (เซิร์ฟเวอร์ที่ใช้แปลงชื่อเว็บไซต์เป็น IP Address) เพื่อให้อุปกรณ์สามารถสื่อสารในเครือข่ายและออกสู่อินเทอร์เน็ตได้อย่างถูกต้อง
+- **บริหารจัดการง่าย:** ผู้ดูแลระบบสามารถตั้งค่าและบริหารจัดการ IP Address ทั้งหมดได้จากส่วนกลาง ทำให้การเปลี่ยนแปลงหรือเพิ่มอุปกรณ์ในเครือข่ายเป็นไปอย่างง่ายดาย
+
+**สรุปง่ายๆ คือ** DHCP Server เปรียบเสมือนผู้จัดการที่คอยจัดสรร "ที่อยู่" (IP Address) และ "ข้อมูลการเดินทาง" (การตั้งค่าเครือข่าย) ให้กับอุปกรณ์ต่างๆ ที่เข้ามาในเครือข่าย เพื่อให้อุปกรณ์เหล่านั้นสามารถสื่อสารกันและเชื่อมต่ออินเทอร์เน็ตได้อย่างราบรื่น โดยไม่ต้องให้ผู้ใช้หรือผู้ดูแลระบบมาตั้งค่าเองทีละเครื่อง
+
+## ขั้นตอนการตั้งค่า DHCP Server
+
+<Steps>
+
+### ล็อกอินเข้าสู่หน้า Dashboard
+
+```
+http://<ip_address>:5380
+```
+
+### ไปที่เมนู DHCP > Scopes
+
+![technitium-dhcp-1](/images/technitium/dhcp-1.png)
+
+### คลิกปุ่ม Add Scope
+
+- **Name:** ชื่อของ Scope (เช่น vlan10)
+- **Starting Adress:** IP Address เริ่มต้นของช่วงที่จะแจก (เช่น 10.11.10.3)
+- **Ending Address:** IP Address สิ้นสุดของช่วงที่จะแจก (เช่น 10.11.10.254)
+- **Subnet Mask:** Subnet Mask ของเครือข่าย (เช่น 255.255.255.0)
+- **Lease Time:** ระยะเวลาที่ IP Address จะถูกสงวนให้กับอุปกรณ์ (เช่น 1 วัน)
+
+![technitium-dhcp-2](/images/technitium/dhcp-2.png)
+
+- **Ping Check:** เปิดใช้งานเพื่อให้ DHCP Server ตรวจสอบว่า IP Address ที่จะแจกนั้นว่างอยู่จริงหรือไม่ โดยการส่ง Ping ไปยัง IP Address นั้นก่อน
+
+![technitium-dhcp-3](/images/technitium/dhcp-3.png)
+
+- **Domain Name:** ชื่อของโดเมนที่จะแจกให้กับอุปกรณ์ (เช่น ctsurin.local)
+
+![technitium-dhcp-4](/images/technitium/dhcp-4.png)
+
+- **Router Address:** IP Address ของเกตเวย์หลักของเครือข่าย (เช่น 10.11.10.1)
+- **DNS Server Address:** IP Address ของ DNS Server ที่จะแจกให้กับอุปกรณ์ (เช่น 10.11.254.10)
+
+![technitium-dhcp-5](/images/technitium/dhcp-5.png)
+
+- หลังจากกรอกข้อมูลทั้งหมดแล้ว คลิกปุ่ม **Save**
+- ระบบจะสร้าง Scope ใหม่ขึ้นมา
+
+### ที่อุปกรณ์ Network switch หรือ Router
+
+- กำหนด DHCP Relay หรือ IP Helper ให้ชี้ไปยัง IP Address ของ Technitium DNS Server ที่ทำหน้าที่เป็น DHCP Server
+
+### ทดสอบการทำงานของ DHCP Server
+
+- เชื่อมต่ออุปกรณ์ใหม่เข้ากับเครือข่าย
+- ตรวจสอบว่าอุปกรณ์ได้รับ IP Address และการตั้งค่าเครือข่าย
+
+```cmd
+C:\> ipconfig /all
+
+Ethernet adapter Ethernet:
+
+    Connection-specific DNS Suffix  . : ctsurin.local
+    IPv4 Address. . . . . . . . . . . : 10.11.10.3
+    Subnet Mask . . . . . . . . . . . : 255.255.255.0
+    Default Gateway . . . . . . . . . : 10.11.10.1
+    DNS Servers . . . . . . . . . . . : 10.11.254.10
+```
+</Steps>
