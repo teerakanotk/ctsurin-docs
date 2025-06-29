@@ -1,7 +1,20 @@
-import type { NextConfig } from "next";
+import nextra from "nextra";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+const withNextra = nextra({
+  // ... Add Nextra-specific options here
+  search: { codeblocks: false },
+  defaultShowCopyCode: true,
+});
 
-export default nextConfig;
+export default withNextra({
+  // ... Add Next-config options here
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/docs",
+        permanent: true,
+      },
+    ];
+  },
+});
