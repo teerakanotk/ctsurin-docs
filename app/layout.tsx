@@ -32,6 +32,7 @@ export default async function RootLayout({
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/teerakanotk/ctsurin-docs/tree/main"
           footer={footer}
+          sidebar={ {defaultOpen: true} }
         >
           {children}
         </Layout>
