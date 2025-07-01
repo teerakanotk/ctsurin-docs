@@ -7,16 +7,6 @@ import { Steps } from 'nextra/components'
 
 # Zabbix
 
-คือซอฟต์แวร์โอเพนซอร์สที่ใช้สำหรับเฝ้าระวังระบบโครงสร้างพื้นฐานด้าน IT โดยเฉพาะ หน้าที่หลักของ Zabbix คือการ ติดตามประสิทธิภาพ สถานะ และความพร้อมใช้งาน ของอุปกรณ์และบริการต่าง ๆ ในระบบของคุณอย่างต่อเนื่อง ไม่ว่าจะเป็นเซิร์ฟเวอร์ อุปกรณ์เครือข่าย แอปพลิเคชัน หรือฐานข้อมูล
-
-- **Version:** 7.0 LTS
-- **OS:** Ubuntu 24.04 LTS
-- **Zabbix components:** Server, Frontend, Agent 2
-- **Database:** PostgreSQL
-- **Web Server:** Nginx
-
-<br/>
-
 ## ขั้นตอนการติดตั้ง
 
 <Steps>
@@ -27,31 +17,45 @@ import { Steps } from 'nextra/components'
 sudo apt update && sudo apt upgrade -y
 ```
 
-### สำหรับเครื่องที่เป็น LXC
+### สำหรับใครที่ใช้ LXC
+
+ถ้าคุณใช้ LXC อยู่ ต้องตั้งค่า Locale (ภาษา) ให้เป็น en_US.UTF8 ไม่งั้นอาจจะเจอปัญหาแปลกๆ ได้
 
 ```bash
-sudo sed -i 's/^# \\(en_US\\.UTF-8 UTF-8\\)$/\\1/' /etc/locale.gen && sudo locale-gen && sudo update-locale LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+sudo dpkg-reconfigure locales
 ```
 
-### ติดตั้ง Dependencies
+จะปรากฏหน้าต่างให้เลือกภาษา ให้เลือก `en_US.UTF-8 UTF-8` แล้วกด `Enter`
+
+![zabbix-install-9](/images/zabbix/install-9.png)
+
+จากนั้นเลือกเป็นค่าเริ่มต้น (default) ด้วยการกด `Enter` อีกครั้ง
+
+![zabbix-install-10](/images/zabbix/install-10.png)
+
+### ติดตั้ง Dependencies ที่จำเป็น
 
 ```bash
-sudo apt install -y wget curl gnupg2
+sudo apt install -y wget curl gnupg
 ```
 
-### เพิ่ม Zabbix Repository
+### ดาวน์โหลดและติตดั้ง Zabbix Repository
 
 ```bash
-wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu24.04_all.deb && sudo dpkg -i zabbix-release_latest_7.0+ubuntu24.04_all.deb && sudo apt update && sudo rm -f zabbix-release_latest_7.0+ubuntu24.04_all.deb
+wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu24.04_all.deb
+sudo dpkg -i zabbix-release_latest_7.0+ubuntu24.04_all.deb
+sudo apt update
 ```
 
-### ติดตั้ง Zabbix Server, Frontend, Agent 2
+### ติดตั้ง Zabbix Server, Frontend และ Agent 2
 
 ```bash
 sudo apt install -y zabbix-server-pgsql zabbix-frontend-php php8.3-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent2
 ```
 
-### ติดตั้ง Zabbix Agent 2 Plugins
+### ติดตั้ง Zabbix Agent 2 Plugins (ถ้าต้องการ)
+
+ถ้าคุณอยากจะมอนิเตอร์ MongoDB, MS SQL หรือ PostgreSQL ก็ลงปลั๊กอินพวกนี้เพิ่มได้เลยนะ
 
 ```bash
 sudo apt install -y zabbix-agent2-plugin-mongodb zabbix-agent2-plugin-mssql zabbix-agent2-plugin-postgresql
@@ -59,42 +63,23 @@ sudo apt install -y zabbix-agent2-plugin-mongodb zabbix-agent2-plugin-mssql zabb
 
 ### ติดตั้ง PostgreSQL
 
-- เพิ่ม PostgreSQL Apt Repository
-
 ```bash
-sudo apt install -y postgresql-common
-sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+sudo apt install -y postgresql
 ```
 
-เมื่อเจอข้อความแบบนี้ ให้กดปุ่ม `Enter` ได้เลย:
+### เตรียมฐานข้อมูลให้พร้อมใช้
 
-```bash
-This script will enable the PostgreSQL APT repository on apt.postgresql.org on
-your system. The distribution codename used will be noble-pgdg.
+  - **สร้างผู้ใช้สำหรับฐานข้อมูล:**
 
-Press Enter to continue, or Ctrl-C to abort.
+    ```bash
+    sudo -u postgres createuser --pwprompt zabbix
+    ```
 
-```
+  - **สร้างฐานข้อมูล `zabbix` และกำหนดให้ผู้ใช้ `zabbix` เป็นเจ้าของ:**
 
-- ติดตั้ง PostgreSQL เวอร์ชัน 17
-
-```bash
-sudo apt install -y postgresql-17
-```
-
-### เตรียมฐานข้ฮมูล
-
-- สร้างผู้ใช้สำหรับจัดการฐานข้อมูล
-
-```bash
-sudo -u postgres createuser --pwprompt zabbix
-```
-
-- สร้างฐานข้อมูล Zabbix
-
-```bash
-sudo -u postgres createdb -O zabbix zabbix
-```
+    ```bash
+    sudo -u postgres createdb -O zabbix zabbix
+    ```
 
 ### นำเข้า Schema
 
@@ -102,13 +87,13 @@ sudo -u postgres createdb -O zabbix zabbix
 zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix
 ```
 
-### แก้ไขไฟล์ zabbix_server.conf
+###  แก้ไขไฟล์ Config
 
-```
+```bash
 sudo nano /etc/zabbix/zabbix_server.conf
 ```
 
-เพิ่มบรรทัด `DBPassword` ตามตัวอย่างนี้
+จากนั้นหาบรรทัด `DBPassword=` แล้วเพิ่มรหัสผ่านของคุณลงไปตามตัวอย่างนี้
 
 ```bash filename="/etc/zabbix/zabbix_server.conf"
 ### Option: DBPassword
@@ -122,73 +107,83 @@ sudo nano /etc/zabbix/zabbix_server.conf
 DBPassword=<your_db_password>
 ```
 
-> อย่าลืมเปลี่ยน `<your_db_password>` เป็นรหัสผ่านของคุณ
+> **อย่าลืม\!** เปลี่ยน `<your_db_password>` เป็นรหัสผ่านที่คุณตั้งไว้
 
-### ปิดใช้งานหน้าเว็บ Default ของ Nginx
+###  ปิดหน้าเว็บ Default ของ Nginx
 
 ```bash
 sudo rm -f /etc/nginx/sites-enabled/default
 ```
 
-### รีสตาร์ทและเปิดใช้งานเซอร์วิส
+###  รีสตาร์ทและเปิดใช้งานเซอร์วิส
 
 ```bash
-systemctl restart zabbix-server zabbix-agent2 nginx php8.3-fpm
-systemctl enable zabbix-server zabbix-agent2 nginx php8.3-fpm
+systemctl restart zabbix-server zabbix-agent2 postgresql nginx php8.3-fpm
+systemctl enable zabbix-server zabbix-agent2 postgresql nginx php8.3-fpm
 ```
 
 </Steps>
 
-<br/>
+-----
 
-## การตั้งค่าเมื่อล็อกอินเข้าสู่ระบบครั้งแรก
+## ตั้งค่าครั้งแรกผ่านหน้าเว็บ
 
 <Steps>
 
-### เปิดเว็บเบราว์เซอร์และพิมพ์ URL ต่อไปนี้
+### เปิดเว็บเบราว์เซอร์แล้วไปที่ IP address ของเซิร์ฟเวอร์
 
 ```
 http://ip_address
 ```
 
-### คลิก Next step
+### กด Next step
+
+คุณจะเจอหน้าต้อนรับแบบในรูป กด Next step ไปเลย
 
 ![zabbix-install-1](/images/zabbix/install-1.png)
 
 ### Check of pre-requisites
 
-- หากสถานะทั้งหมดเป็น OK ให้คลิก Next step
+หน้านี้จะเช็คว่าทุกอย่างพร้อมมั้ย ถ้าขึ้น **OK** หมดก็กด **Next step**
 
 ![zabbix-install-2](/images/zabbix/install-2.png)
 
 ### Configure DB connection
 
-- ให้กรอกรหัสผ่านของฐานข้อมูลที่ตั้งค่าไว้ลงไป
+ใส่รหัสผ่านฐานข้อมูลที่คุณตั้งไว้ในขั้นตอนก่อนหน้าลงไปเลย
 
 ![zabbix-install-3](/images/zabbix/install-3.png)
 
 ### Settings
 
-- เลือก Default time zone
+เลือก Time zone ให้ถูกต้อง จะได้ไม่สับสนเรื่องเวลาที่แสดงใน Zabbix
 
 ![zabbix-install-4](/images/zabbix/install-4.png)
 
 ### Pre-installation summary
 
-- ตรวจเช็คอีกครั้งว่ากรอกข้อมูลครบหรือยัง จากนั้นคลิก Next step
+หน้านี้จะสรุปการตั้งค่าทั้งหมดให้ดูอีกที ถ้าข้อมูลถูกต้องแล้วก็กด **Next step** เลย
 
 ![zabbix-install-5](/images/zabbix/install-5.png)
 
 ### Install
 
-- คลิก Finish
+กด **Finish**
 
 ![zabbix-install-6](/images/zabbix/install-6.png)
 
-### ล็อกอินเข้าสู่ระบบ (Default credentials)
+### ล็อกอินเข้าสู่ระบบ
 
-- Username: Admin
-- Password: zabbix
+ตอนนี้คุณจะเห็นหน้าจอล็อกอิน ให้ใส่ข้อมูลตามนี้เลย
+
+  - **Username:** Admin
+  - **Password:** zabbix
 
 ![zabbix-install-7](/images/zabbix/install-7.png)
+
+### เสร็จสิ้นการติดตั้ง
+
+![zabbix-install-8](/images/zabbix/install-8.png)
 </Steps>
+
+Reference: [Zabbix Documentation](https://www.zabbix.com/download?zabbix=7.0&os_distribution=ubuntu&os_version=24.04&components=server_frontend_agent_2&db=pgsql&ws=nginx)
