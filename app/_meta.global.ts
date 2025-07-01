@@ -12,14 +12,11 @@ export default {
                 title: "Installation",
               },
               repository: '',
-              vm: {
-                title: "VM"
-              },
               lxc: {
                 title: "LXC",
                 items: {
-                  'download-templates': {
-                    title: "Download Templates",
+                  'templates': {
+                    title: "Templates",
                   },
                   create:''
                 }
@@ -60,20 +57,20 @@ export default {
           }
         }
       },
-      firewall: {
-        items: {
-          'huawei-usg6530e': {
-            title: "Huawei USG6530E",
-          }
-        }
-      },
-      switch: {
-        items: {
-          'huawei-s5731-h': {
-            title: "Huawei S5731-H",
-          }
-        }
-      }
+      // firewall: {
+      //   items: {
+      //     'huawei-usg6530e': {
+      //       title: "Huawei USG6530E",
+      //     }
+      //   }
+      // },
+      // switch: {
+      //   items: {
+      //     'huawei-s5731-h': {
+      //       title: "Huawei S5731-H",
+      //     }
+      //   }
+      // }
     }
   },
 };
