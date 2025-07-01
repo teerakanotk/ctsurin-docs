@@ -1,0 +1,71 @@
+
+import { Steps,Cards } from "nextra/components";
+
+# Technitium DNS
+
+Technitium DNS เป็น DNS Server แบบโอเพนซอร์สที่มาพร้อมกับ Web-based Dashboard ช่วยให้คุณจัดการระบบ DNS ได้ง่ายดาย ไม่ว่าจะเป็นการทำหน้าที่เป็น Authoritative DNS สำหรับจัดการโซน DNS ของตัวเอง หรือ Recursive Resolver เพื่อสอบถาม DNS จากเซิร์ฟเวอร์ภายนอก
+
+## ขั้นตอนการติดตั้ง
+
+- อัปเดตระบบ
+
+```
+sudo apt update && sudo apt upgrade -y
+```
+
+- ติดตั้ง Technitium DNS
+
+```
+curl -sSL https://download.technitium.com/dns/install.sh | sudo bash
+```
+
+## ล็อกอินเข้าสู่ระบบครั้งแรก
+
+- เปิดเว็บเบราว์เซอร์และพิมพ์ URL ดังต่อไปนี้
+
+```
+http://ip_address:5380
+```
+
+> แทนที่ `ip_address` ด้วยที่อยู่ไอพีของเซิร์ฟเวอร์คุณ
+
+- เมื่อคุณเข้าสู่ระบบครั้งแรก ระบบจะแจ้งให้คุณกำหนดรหัสผ่าน admin
+
+![technitium-install-1](/images/technitium/install-1.png)
+
+## การตั้งค่าทั่วไป
+
+<Steps>
+
+### General
+
+- DNS Server Domain: ระบุชื่อ FQDN ของเซิร์ฟเวอร์คุณ (เช่น `ns1.ctsurin.local`)
+
+![technitium-install-2](/images/technitium/install-2.png)
+
+- Zone Defaults: ติ๊กถูกตามภาพ
+
+![technitium-install-3](/images/technitium/install-3.png)
+
+### Web Service
+
+เพื่อให้การสื่อสารระหว่างเบราว์เซอร์ของคุณกับ Web Dashboard มีความปลอดภัยยิ่งขึ้น ควรเปิดใช้งาน HTTPS
+
+- ไปที่เมนู Settings
+- เลือกเมนูย่อย Web Service
+- ในส่วน HTTPS Options ให้ติ๊กเลือกช่องดังต่อไปนี้
+
+  ![technitium-install-4](/images/technitium/install-4.png)
+
+- เลื่อนลงมาด้านล่างสุด แล้วคลิกปุ่ม Save Settings
+
+### Proxy & Forwarders
+
+- เลื่อนลงมาที่หัวข้อ **Forwarders**
+- ระบุ Public DNS ที่ต้องการ
+
+![technitium-install-5](/images/technitium/install-5.png)
+
+- เลื่อนลงมาด้านล่างสุด แล้วคลิกปุ่ม Save Settings
+
+</Steps>
