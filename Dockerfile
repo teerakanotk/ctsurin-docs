@@ -1,9 +1,9 @@
 # Stage 1: Build Application Artifacts
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Enable pnpm for dependency management (Corepack is included in Node 20+)
+# Enable pnpm for dependency management (Corepack is included in Node 22+)
 RUN corepack enable pnpm
 
 # Copy essential package files to leverage Docker layer caching
@@ -22,7 +22,7 @@ RUN pnpm build
 RUN mkdir -p /app/public/_pagefind
 
 # Stage 2: Create Production-Ready Image
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 
 WORKDIR /app
 
