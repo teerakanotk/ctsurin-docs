@@ -8,13 +8,5 @@ const withNextra = nextra({
 
 export default withNextra({
   // ... Add Next-config options here
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/docs",
-        permanent: true,
-      },
-    ];
-  },
+  output: "standalone"
 });
