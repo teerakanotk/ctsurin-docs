@@ -1,4 +1,4 @@
-## Stage 1: Build Application Artifacts
+# Stage 1: Build Application Artifacts
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN pnpm build
 # Create a placeholder directory for Pagefind to prevent build errors
 RUN mkdir -p /app/public/_pagefind
 
-## Stage 2: Create Production-Ready Image
+# Stage 2: Create Production-Ready Image
 FROM node:20-alpine AS production
 
 WORKDIR /app
