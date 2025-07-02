@@ -1,4 +1,3 @@
-
-export default function HomePage({props}: Props){
-    return <div className="min-h-screen">HomePage</div>
+export default function HomePage() {
+  return <div className="min-h-screen">HomePage</div>;
 }
