@@ -14,7 +14,12 @@ export const metadata: Metadata = {
   },
 };
 
-const navbar = <Navbar logo={<p>CT Document</p>} />;
+const navbar = (
+  <Navbar
+    logo={<p>CT Document</p>}
+    projectLink="https://github.com/teerakanotk/ctsurin-docs/tree/main/"
+  />
+);
 
 const footer = <Footer>{new Date().getFullYear()} CT Document</Footer>;
 
@@ -32,7 +37,9 @@ export default async function RootLayout({
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/teerakanotk/ctsurin-docs/tree/main"
           footer={footer}
-          sidebar={ {defaultOpen: true} }
+          sidebar={{
+            toggleButton: false,
+          }}
         >
           {children}
         </Layout>
