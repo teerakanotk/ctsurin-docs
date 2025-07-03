@@ -27,18 +27,16 @@ export default {
               installation: {
                 title: "Installation",
               },
-              zone: {
-                title: "Zone Management",
+              "dns-zone": {
+                title: "DNS Zone",
               },
-              "record-type": {
-                title: "Record Type",
-              },
-              "record-create": {
-                title: "Create Record",
+              "dns-record": {
+                title: "DNS Record",
               },
               dhcp: "",
             },
           },
+          docker: "",
           "nginx-proxy-manager": {
             title: "Nginx Proxy Manager",
           },
