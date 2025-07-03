@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="h-[90vh] flex flex-col items-center justify-center px-4 bg-white">
+    <div className="h-[90vh] flex flex-col items-center justify-center px-4">
       <h1 className="text-4xl font-bold text-center">Welcome to CT Document</h1>
       <p className="text-center mt-4">
         This is the home page of the CT Document application.
