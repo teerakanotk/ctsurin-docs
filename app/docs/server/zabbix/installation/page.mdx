@@ -2,19 +2,43 @@ import { Steps } from 'nextra/components'
 
 # Zabbix
 
+Zabbix (แซบบิกซ์) คือ ซอฟต์แวร์โอเพนซอร์ส (Open Source) สำหรับ มอนิเตอร์ระบบไอที (IT Infrastructure Monitoring) พูดง่ายๆ คือเป็นเครื่องมือที่ช่วยให้คุณสามารถเฝ้าระวังและติดตามประสิทธิภาพของอุปกรณ์ต่างๆ ในระบบคอมพิวเตอร์และเครือข่ายของคุณได้แบบเรียลไทม์
+
+## ความสามารถและคุณสมบัติ
+
+- มอนิเตอร์ได้ครอบคลุม: เซิร์ฟเวอร์, อุปกรณ์เครือข่าย, แอปพลิเคชัน, เครื่องเสมือน
+
+- รวบรวมข้อมูลผ่าน Agent, SNMP, JMX หรือ API
+
+- แสดงผลข้อมูลในรูปแบบกราฟที่สวยงามและแดชบอร์ดที่ปรับแต่งได้ ช่วยให้เห็นภาพรวมและแนวโน้ม
+
+- รองรับการแจ้งเตือนผ่านอีเมล, SMS, Line Notify, Telegram, Slack และอื่นๆ
+
+- เก็บประวัติการทำงานของระบบ ทำให้สามารถย้อนดูปัญหา วิเคราะห์ และคาดการณ์แนวโน้มในอนาคตได้
+
+- Open Source
+
+## สภาพแวดล้อมที่ใช้ในการติดตั้ง
+
+- CPU: 1 Core
+
+- RAM: 512 MB
+
+- Storage: 20 GB
+
+- OS: Linux Ubuntu 24.04 LTS
+
 ## ขั้นตอนการติดตั้ง
 
 <Steps>
 
-### อัปเดตระบบ
+### อัปเดตระบบปฏิบัติการ
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-### สำหรับใครที่ใช้ LXC
-
-ถ้าคุณใช้ LXC อยู่ ต้องตั้งค่า Locale (ภาษา) ให้เป็น en_US.UTF8 ไม่งั้นอาจจะเจอปัญหาแปลกๆ ได้
+### ตั้งค่าภาษา (Locale)
 
 ```bash
 sudo dpkg-reconfigure locales
@@ -34,7 +58,7 @@ sudo dpkg-reconfigure locales
 sudo apt install -y wget curl gnupg
 ```
 
-### ดาวน์โหลดและติตดั้ง Zabbix Repository
+### เพิ่ม Zabbix Repository
 
 ```bash
 wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu24.04_all.deb
@@ -48,9 +72,7 @@ sudo apt update
 sudo apt install -y zabbix-server-pgsql zabbix-frontend-php php8.3-pgsql zabbix-nginx-conf zabbix-sql-scripts zabbix-agent2
 ```
 
-### ติดตั้ง Zabbix Agent 2 Plugins (ถ้าต้องการ)
-
-ถ้าคุณอยากจะมอนิเตอร์ MongoDB, MS SQL หรือ PostgreSQL ก็ลงปลั๊กอินพวกนี้เพิ่มได้เลยนะ
+### ติดตั้ง Zabbix Agent 2 Plugins
 
 ```bash
 sudo apt install -y zabbix-agent2-plugin-mongodb zabbix-agent2-plugin-mssql zabbix-agent2-plugin-postgresql
@@ -64,32 +86,31 @@ sudo apt install -y postgresql
 
 ### เตรียมฐานข้อมูลให้พร้อมใช้
 
-  - **สร้างผู้ใช้สำหรับฐานข้อมูล:**
+- สร้างผู้ใช้สำหรับฐานข้อมูลชื่อ `zabbix`
 
     ```bash
     sudo -u postgres createuser --pwprompt zabbix
     ```
 
-  - **สร้างฐานข้อมูล `zabbix` และกำหนดให้ผู้ใช้ `zabbix` เป็นเจ้าของ:**
+- สร้างฐานข้อมูล `zabbix` และกำหนดให้ผู้ใช้ `zabbix` เป็นเจ้าของ
 
     ```bash
     sudo -u postgres createdb -O zabbix zabbix
     ```
 
-### นำเข้า Schema
+### นำเข้าโครงสร้างฐานข้อมูล (Schema)
 
 ```bash
 zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix
 ```
 
-###  แก้ไขไฟล์ Config
+###  แก้ไขไฟล์คอนฟิก Zabbix Server
 
 ```bash
 sudo nano /etc/zabbix/zabbix_server.conf
 ```
 
-จากนั้นหาบรรทัด `DBPassword=` แล้วเพิ่มรหัสผ่านของคุณลงไปตามตัวอย่างนี้
-
+เลื่อนหาบรรทัดที่เริ่มต้นด้วย DBPassword= แล้วเพิ่มรหัสผ่านของคุณตามตัวอย่าง (อย่าลืมเปลี่ยน `<your_db_password>` เป็นรหัสผ่านจริง)
 ```bash filename="/etc/zabbix/zabbix_server.conf"
 ### Option: DBPassword
 #       Database password.
@@ -102,15 +123,15 @@ sudo nano /etc/zabbix/zabbix_server.conf
 DBPassword=<your_db_password>
 ```
 
-> **อย่าลืม\!** เปลี่ยน `<your_db_password>` เป็นรหัสผ่านที่คุณตั้งไว้
-
-###  ปิดหน้าเว็บ Default ของ Nginx
+###  ลบไฟล์คอนฟิก Nginx Default
 
 ```bash
 sudo rm -f /etc/nginx/sites-enabled/default
 ```
 
 ###  รีสตาร์ทและเปิดใช้งานเซอร์วิส
+
+รีสตาร์ทเซอร์วิสที่เกี่ยวข้องทั้งหมด และตั้งค่าให้เซอร์วิสเหล่านี้ทำงานโดยอัตโนมัติเมื่อรีบูตเครื่อง
 
 ```bash
 systemctl restart zabbix-server zabbix-agent2 postgresql nginx php8.3-fpm
@@ -121,64 +142,67 @@ systemctl enable zabbix-server zabbix-agent2 postgresql nginx php8.3-fpm
 
 -----
 
-## ตั้งค่าครั้งแรกผ่านหน้าเว็บ
+## ตั้งค่า Zabbix ครั้งแรกผ่านหน้าเว็บ
 
 <Steps>
 
 ### เปิดเว็บเบราว์เซอร์แล้วไปที่ IP address ของเซิร์ฟเวอร์
 
+เปิดเว็บเบราว์เซอร์ของคุณ แล้วพิมพ์ IP address ของเซิร์ฟเวอร์ Zabbix (เช่น http://192.168.1.100)
+
 ```
 http://ip_address
 ```
 
-### กด Next step
+### เริ่มต้นการติดตั้ง
 
-คุณจะเจอหน้าต้อนรับแบบในรูป กด Next step ไปเลย
+คุณจะเห็นหน้าต้อนรับของ Zabbix ให้คลิก Next step เพื่อดำเนินการต่อ
 
 ![zabbix-install-1](/images/zabbix/install-1.png)
 
-### Check of pre-requisites
+### ตรวจสอบความพร้อมของระบบ
 
-หน้านี้จะเช็คว่าทุกอย่างพร้อมมั้ย ถ้าขึ้น **OK** หมดก็กด **Next step**
+หน้านี้จะตรวจสอบว่าระบบของคุณพร้อมสำหรับการติดตั้ง Zabbix หรือไม่ ถ้าทุกอย่างขึ้น **OK** ให้คลิก **Next step**
 
 ![zabbix-install-2](/images/zabbix/install-2.png)
 
-### Configure DB connection
+### กำหนดค่าการเชื่อมต่อฐานข้อมูล
 
-ใส่รหัสผ่านฐานข้อมูลที่คุณตั้งไว้ในขั้นตอนก่อนหน้าลงไปเลย
+ป้อนรหัสผ่านฐานข้อมูลที่คุณตั้งไว้สำหรับชื่อผู้ใช้ `zabbix` ในขั้นตอนที่ 8 แล้วคลิก **Next step**
 
 ![zabbix-install-3](/images/zabbix/install-3.png)
 
-### Settings
+### ตั้งค่าทั่วไป
 
-เลือก Time zone ให้ถูกต้อง จะได้ไม่สับสนเรื่องเวลาที่แสดงใน Zabbix
+เลือก Time zone ให้ถูกต้อง เพื่อให้เวลาที่แสดงใน Zabbix ตรงกับเวลาในพื้นที่ของคุณ จากนั้นคลิก Next step
 
 ![zabbix-install-4](/images/zabbix/install-4.png)
 
-### Pre-installation summary
+### สรุปการตั้งค่า
 
-หน้านี้จะสรุปการตั้งค่าทั้งหมดให้ดูอีกที ถ้าข้อมูลถูกต้องแล้วก็กด **Next step** เลย
+หน้านี้จะแสดงสรุปการตั้งค่าทั้งหมดที่คุณเลือกไว้ หากข้อมูลถูกต้อง ให้คลิก Next step
 
 ![zabbix-install-5](/images/zabbix/install-5.png)
 
-### Install
+### ติดตั้ง Zabbix สำเร็จ
 
-กด **Finish**
+คลิก Finish เพื่อดำเนินการต่อ
 
 ![zabbix-install-6](/images/zabbix/install-6.png)
 
 ### ล็อกอินเข้าสู่ระบบ
 
-ตอนนี้คุณจะเห็นหน้าจอล็อกอิน ให้ใส่ข้อมูลตามนี้เลย
+เมื่อติดตั้งเสร็จแล้ว คุณจะถูกพามายังหน้าล็อกอิน ใส่ข้อมูลผู้ใช้เริ่มต้นดังนี้
 
   - **Username:** Admin
+
   - **Password:** zabbix
 
 ![zabbix-install-7](/images/zabbix/install-7.png)
 
-### เสร็จสิ้นการติดตั้ง
+### การติดตั้งเสร็จสมบูรณ์
 
 ![zabbix-install-8](/images/zabbix/install-8.png)
 </Steps>
 
-Reference: [Zabbix Documentation](https://www.zabbix.com/download?zabbix=7.0&os_distribution=ubuntu&os_version=24.04&components=server_frontend_agent_2&db=pgsql&ws=nginx)
+> Reference: [Zabbix Documentation](https://www.zabbix.com/download?zabbix=7.0&os_distribution=ubuntu&os_version=24.04&components=server_frontend_agent_2&db=pgsql&ws=nginx)
