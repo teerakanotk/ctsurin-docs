@@ -1,78 +1,64 @@
-import { Steps } from 'nextra/components'
+import { Steps } from "nextra/components";
 
 # Nginx Proxy Manager
 
 เครื่องมือจัดการ reverse proxy ที่สร้างขึ้นบนพื้นฐานของ Nginx โดยมีอินเทอร์เฟซแบบ Web GUI ที่ใช้งานง่าย ช่วยให้ผู้ใช้สามารถตั้งค่า reverse proxy, SSL certificates (เช่น Let's Encrypt), redirection, และ access control ได้สะดวก โดยไม่ต้องแก้ไขไฟล์ config ด้วยตนเอง
 
-**คุณสมบัติหลัก:**
+## ขั้นตอนการติดตั้ง Docker และ Docker Compose
 
-- จัดการ Reverse Proxy
+ก่อนเริ่มการติดตั้ง Nginx Proxy Manager คุณต้องติดตั้ง Docker และ Docker Compose บนเครื่องของคุณก่อน
 
-- จัดการ SSL Certificate ฟรี (Let's Encrypt)
+1. อัปเดตระบบ
 
-- อินเทอร์เฟซผู้ใช้ที่สวยงามและใช้งานง่าย
+    ```bash
+    sudo apt-get update
+    sudo apt-get upgrade
+    ```
 
-- รองรับ Docker
+2. เพิ่ม repository ของ Docker
 
-## ขั้นตอนการติดตั้ง
+    ```bash
+    # Add Docker's official GPG key:
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    ```
+
+    > [!note]
+    >
+    > คัดลอกข้อความด้านบนไปวางในเทอร์มินัลของคุณและกดปุ่ม `Enter` เพื่อเพิ่ม repository ของ Docker
+
+3. ติดตั้ง Docker
+
+    ```bash
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    ```
+
+## ติดตั้ง Nginx Proxy Manager ด้วย Docker Compose
 
 <Steps>
 
-### อัปเดตระบบ
+### สร้างโฟลเดอร์สำหรับเก็บไฟล์
 
 ```bash
-sudo apt update && sudo apt upgrade -y
+mkdir nginx-proxy-manager
+cd nginx-proxy-manager
 ```
 
-### ติดตั้ง Dependencies ที่จำเป็น
+### สร้างไฟล์ docker-compose.yml
 
-```bash
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-```
+คัดลอกข้อความด้านล่างแล้ววางในไฟล์ `docker-compose.yml` ที่คุณสร้างขึ้นในโฟลเดอร์ `nginx-proxy-manager`
 
-### เพิ่ม Docker's official GPG key
-
-```bash
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-```
-
-### เพิ่ม Docker repository
-
-```bash
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-### อัปเดตแพ็คเกจอีกครั้ง
-
-```bash
-sudo apt update
-```
-
-### ติดตั้ง Docker
-
-```bash
-sudo apt install -y docker-ce docker-ce-cli containerd.io
-```
-
-### เปิดใช้งาน Docker
-
-```bash
-sudo systemctl start docker
-sudo systemctl enable docker
-```
-
-### เตรียมไฟล์ docker-compose.yml
-
-- สร้างโฟลเดอร์สำหรับเก็บไฟล์
-
-```
-mkdir nginxproxymanager
-cd nginxproxymanager
-```
-
-- สร้างไฟล์ docker-compose.yml จากนั้นคัดลอกข้อความด้านล่างแล้ววางลงไปในไฟล์
-
-```bash filename="~/nginxproxymanager/docker-compose.yml"
+```bash filename="~/nginx-proxy-manager/docker-compose.yml"
 services:
   app:
     image: 'jc21/nginx-proxy-manager:latest'
@@ -86,71 +72,68 @@ services:
       - ./letsencrypt:/etc/letsencrypt
 ```
 
-- บันทึกไฟล์
-- เริ่มต้นการดึง image
+### บันทึกไฟล์
+
+### รัน Docker Compose
+
+หลังจากที่คุณได้สร้างไฟล์ `docker-compose.yml` แล้ว ให้รันคำสั่งด้านล่างเพื่อเริ่มต้น Nginx Proxy Manager
 
 ```bash
 sudo docker compose up -d
 ```
 
+ผลลัพธ์ที่ได้จะคล้ายกับด้านล่างนี้
+
 ```bash
 [+] Running 36/36
  ✔ app Pulled                                                                     27.7s
 [+] Running 2/2
- ✔ Network nginxproxymanager_default  Creat...                                     0.1s 
- ✔ Container nginxproxymanager-app-1  Start...                                     0.5s 
+ ✔ Network nginx-proxy-manager_default  Create...                                     0.1s
+ ✔ Container nginx-proxy-manager-app-1  Start...                                     0.5s
 ```
 
-- เช็คสถานะของ docker จะต้องเป็น Up
+### ตรวจสอบสถานะของ Container
 
 ```bash
 docker ps
 ```
 
+ผลลัพธ์ที่ได้จะคล้ายกับด้านล่างนี้
+
 ```bash
 CONTAINER ID   IMAGE                             COMMAND   CREATED          STATUS          PORTS                                                                                      NAMES
-43b95c3e170a   jc21/nginx-proxy-manager:latest   "/init"   40 seconds ago   Up 39 seconds   0.0.0.0:80-81->80-81/tcp, [::]:80-81->80-81/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp   nginxproxymanager-app-1
+43b95c3e170a   jc21/nginx-proxy-manager:latest   "/init"   40 seconds ago   Up 39 seconds   0.0.0.0:80-81->80-81/tcp, [::]:80-81->80-81/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp   nginx-proxy-manager-app-1
 ```
-
-> [!note]
-> 
-> CONTAINER ID ของแต่ละเครื่องจะไม่เหมือนกัน
 
 </Steps>
 
-## การตั้งค่าเบื้องต้น (ครั้งแรก)
+## ล็อกอินและตั้งค่า Nginx Proxy Manager
 
-### เปิดเว็บเบราว์เซอร์และไปที่
+1. เปิดเว็บเบราว์เซอร์และไปที่
 
-```
-http://ip_address:81
-```
+    ```plaintext
+    http://ip_address:81
+    ```
 
-- Email address: admin@example.com
-- Password: changeme
+    ![nginx-proxy-manager-install-1](/images/nginx-proxy-manager/install-1.png)
 
-![nginx-proxy-manager-install-1](/images/nginx-proxy-manager/install-1.png)
 
-### เปลี่ยนอีเมลสำหรับล็อกอิน
+2. ชื่อผู้ใช้และรหัสผ่านเริ่มต้นสำหรับล็อกอิน
 
-- **Email:** admin@domain.tld
+    - Email address: admin@example.com
+    - Password: changeme
 
-> หมายเหตุ: เปลี่ยน `domain.tld` เป็นชื่อโดเมนของคุณ
+3. หลังจากล็อกอินสำเร็จ ระบบจะให้คุณเปลี่ยนอีเมลและรหัสผ่าน
 
-![nginx-proxy-manager-install-2](/images/nginx-proxy-manager/install-2.png)
+    3.1 เปลี่ยนอีเมล (Default email)
 
-- คลิก **Save**
+        ![nginx-proxy-manager-install-2](/images/nginx-proxy-manager/install-2.png)
 
-### เปลี่ยนรหัสผ่าน (Default password)
+    3.2 เปลี่ยนรหัสผ่าน (Default password)
 
-- **Current Password:** changeme
-- **New Password:** ระบุรหัสผ่านที่ต้องการ
-- **Confirm Password:** ยืนยันรหัสผ่านที่ต้องการ
+        ![nginx-proxy-manager-install-3](/images/nginx-proxy-manager/install-3.png)
 
-![nginx-proxy-manager-install-3](/images/nginx-proxy-manager/install-3.png)
 
-- คลิก **Save**
+4. เสร็จสิ้น
 
-## เสร็จสิ้นขั้นตอนการติดตั้งและตั้งค่าเบื้องต้น
-
-![nginx-proxy-manager-install-4](/images/nginx-proxy-manager/install-4.png)
+    ![nginx-proxy-manager-install-4](/images/nginx-proxy-manager/install-4.png)
