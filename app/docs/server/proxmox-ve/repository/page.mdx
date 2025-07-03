@@ -10,17 +10,15 @@ Repository คือแหล่งเก็บรวบรวมไฟล์ �
 
 ## ขั้นตอนการอัปเดต Repository
 
-กรณีไม่ได้สมัคร Enterprise-Subscription แนะนำให้ปิดใช้งาน Enterprise Repository
-
 <Steps>
 
 ### ปิดใช้งาน Enterprise Repository
 
 - เข้าสู่หน้า Web UI ของ Proxmox VE
 
-```txt copy
-http://<ip_address>:8006
-```
+    ```txt copy
+    http://<ip_address>:8006
+    ```
 
 - ที่แถบนำทางด้านซ้ายมือ ให้เลือก **node** ที่ต้องการอัปเดต (เช่น pve1)
 
@@ -28,17 +26,17 @@ http://<ip_address>:8006
 
 - เลือกบรรทัดของ **pve-enterprise** repository แล้วคลิกปุ่ม **Disable**
 
-![proxmox-repository-1](/images/proxmox/repository-1.png)
+    ![proxmox-repository-1](/images/proxmox/repository-1.png)
 
 ### เพิ่ม No-Subscription Repository
 
 - คลิก **Add** ที่อยู่บริเวณส่วนของ **APT Repositories**
 
-![proxmox-repository-2](/images/proxmox/repository-2.png)
+    ![proxmox-repository-2](/images/proxmox/repository-2.png)
 
 - ในหน้าต่างที่ปรากฏขึ้น ให้เลือก **No-Subscription** แล้วคลิกปุ่ม **Add**
 
-![proxmox-repository-3](/images/proxmox/repository-3.png)
+    ![proxmox-repository-3](/images/proxmox/repository-3.png)
 
 ### อัปเดตแพ็คเกจ
 
@@ -46,11 +44,11 @@ http://<ip_address>:8006
 
 - คลิกปุ่ม **Refresh**
 
-![proxmox-repository-4](/images/proxmox/repository-4.png)
+    ![proxmox-repository-4](/images/proxmox/repository-4.png)
 
 - รอจนกระทั่งกระบวนการเสร็จสมบูรณ์และแสดงข้อความ **Task OK**
 
-![proxmox-repository-5](/images/proxmox/repository-5.png)
+    ![proxmox-repository-5](/images/proxmox/repository-5.png)
 
 - กดปุ่ม **Esc** เพื่อปิดหน้าต่างแสดงผล
 
@@ -58,12 +56,16 @@ http://<ip_address>:8006
 
 - คลิกปุ่ม **Upgrade**
 
-![proxmox-repository-6](/images/proxmox/repository-6.png)
+    ![proxmox-repository-6](/images/proxmox/repository-6.png)
 
 - จะมีหน้าต่างป๊อปอัพเด้งขึ้นมา แสดงรายการแพ็คเกจที่ได้รับการอัปเดต จากนั้นกดปุ่ม **Y** แล้วกดปุ่ม **Enter** เพื่อยืนยันการอัปเกรด
 
-![proxmox-repository-7](/images/proxmox/repository-7.png)
+    ![proxmox-repository-7](/images/proxmox/repository-7.png)
 
 - รอจนกว่ากระบวนการอัปเกรดจะเสร็จสมบูรณ์
+
+### รีบูตเครื่อง
+
+หลังจากอัปเกรดสำเร็จแนะนำให้รีบูตเครื่อง เพื่ออัปเดต Kernel เวอร์ชันใหม่
 
 </Steps>
