@@ -8,16 +8,15 @@ import { Steps } from 'nextra/components'
 
 ## ประเภทของ Zone
 
-- Forward Lookup Zone: เป็นโซนที่ใช้ในการแปลงชื่อโดเมน (Hostname) ไปเป็น IP Address (เช่น www.example.com > 192.168.1.1) เป็นการใช้งานที่พบได้บ่อยที่สุด
-- Reverse Lookup Zone: เป็นโซนที่ใช้ในการแปลง IP Address ไปเป็นชื่อโดเมน (Hostname) หรือที่เรียกว่า Reverse DNS Lookup (เช่น 192.168.1.1 > www.example.com) ซึ่งมีประโยชน์สำหรับการตรวจสอบความถูกต้องของอีเมลหรือการวิเคราะห์ Log
+   - Forward Lookup Zone: เป็นโซนที่ใช้ในการแปลงชื่อโดเมน (Hostname) ไปเป็น IP Address (เช่น www.example.com > 192.168.1.1) เป็นการใช้งานที่พบได้บ่อยที่สุด
+
+   - Reverse Lookup Zone: เป็นโซนที่ใช้ในการแปลง IP Address ไปเป็นชื่อโดเมน (Hostname) หรือที่เรียกว่า Reverse DNS Lookup (เช่น 192.168.1.1 > www.example.com) ซึ่งมีประโยชน์สำหรับการตรวจสอบความถูกต้องของอีเมลหรือการวิเคราะห์ Log
 
 ## ขั้นตอนการจัดการ Forward Zone
 
 <Steps>
 
 ### เข้าสู่ระบบ Technitium DNS
-
-เปิดเว็บเบราว์เซอร์แล้วพิมพ์ IP Address ตามด้วยพอร์ต 5380
 
 ```
 http://ip_address:5380
@@ -27,33 +26,37 @@ http://ip_address:5380
 
 ![technitium-dns-4](/images/technitium/dns-4.png)
 
-### สร้างโซนใหม่
+### คลิกปุ่ม Add Zone
 
-- คลิกปุ่ม **Add Zone**
 - Zone: ระบุโดเมนที่ต้องการสร้าง
-- Type: เลือก `Primary`
+
+- Type: เลือก Primary
+
 - Zone Serial: ติ๊ก ☑️ Use SOA Serial Date Scheme
 
-![technitium-dns-5](/images/technitium/dns-5.png)
-
 - จากนั้นคลิกปุ่ม **Add**
+
+   ![technitium-dns-5](/images/technitium/dns-5.png)
 
 ### เพิ่ม A Record สำหรับ DNS Server
 
 - คลิกปุ่ม **Add Record** ที่ Forward zone
 
-![technitium-dns-6](/images/technitium/dns-6.png)
+   ![technitium-dns-6](/images/technitium/dns-6.png)
 
 - Name: ระบุชื่อของเซิร์ฟเวอร์
+
 - Type: เลือก A
+
 - IPv4 Address: ระบุที่อยู่ไอพีของเซิร์ฟเวอร์
 
-![technitium-dns-7](/images/technitium/dns-7.png)
+   ![technitium-dns-7](/images/technitium/dns-7.png)
 
 - คลิกปุ่ม **Save**
+
 - ผลลัพธ์ที่ควรได้
 
-![technitium-dns-8](/images/technitium/dns-8.png)
+   ![technitium-dns-8](/images/technitium/dns-8.png)
 
 </Steps>
 
@@ -63,46 +66,43 @@ http://ip_address:5380
 
 <Steps>
 
-### เข้าสู่ระบบ Technitium DNS
-
-เปิดเว็บเบราว์เซอร์แล้วพิมพ์ IP Address ตามด้วยพอร์ต 5380
-
-```
-http://ip_address:5380
-```
-
 ### ไปที่เมนู Zones
 
 ![technitium-dns-4](/images/technitium/dns-4.png)
 
-### สร้างโซนใหม่
+### คลิกปุ่ม **Add Zone**
 
-- คลิกปุ่ม **Add Zone**
 - Zone: ระบุ Reverse Zone ที่ต้องการสร้าง (เช่น 10.11.254.0/24)
+
 - Type: เลือก Primary Zone
+
 - Zone Serial: ติ๊ก ☑️ Use SOA Serial Date Scheme
 
-![technitium-dns-9](/images/technitium/dns-9.png)
+- จากนั้นคลิกปุ่ม **Add**
 
-- คลิกปุ่ม **Add**
+   ![technitium-dns-9](/images/technitium/dns-9.png)
 
 ### เพิ่ม PTR Record สำหรับ DNS Server
 
 - คลิกปุ่ม **Add Record** ภายใน Reverse zone
 
-![technitium-dns-10](/images/technitium/dns-10.png)
+   ![technitium-dns-10](/images/technitium/dns-10.png)
 
-- กำหนดค่าดังนี้:
+- กำหนดค่าดังนี้
+
    - Name: ระบุ IP Address หลักสุดท้าย
+
    - Type: เลือก PTR
+
    - Domain Name: ระบุ FQDN ของเซิร์ฟเวอร์
 
-![technitium-dns-11](/images/technitium/dns-11.png)
+   ![technitium-dns-11](/images/technitium/dns-11.png)
 
-- คลิกปุ่ม Save
+- คลิกปุ่ม **Save**
+
 - ผลลัพธ์ที่ควรได้
 
-![technitium-dns-12](/images/technitium/dns-12.png)
+   ![technitium-dns-12](/images/technitium/dns-12.png)
 
 </Steps>
 
@@ -110,66 +110,99 @@ http://ip_address:5380
 
 หลังจากที่คุณได้ตั้งค่า DNS Server และ Zones เรียบร้อยแล้ว คุณสามารถทดสอบการทำงานของ DNS Server ได้โดยใช้เครื่องคอมพิวเตอร์ที่ติดตั้ง Windows
 
-### 1\. ตั้งค่า Network Adapter
+<Steps>
+
+### ตั้งค่า Network Adapter
 
 - เปิด Control Panel
-- ไปที่ Network and Internet \> Network and Sharing Center
+
+- ไปที่ Network and Internet
+
+   ![technitium-zone-1](/images/technitium/technitium-zone-1.png)
+
+- คลิก Network and Internet
+
+   ![technitium-zone-2](/images/technitium/technitium-zone-2.png)
+
 - ที่แถบด้านซ้าย คลิก Change adapter settings
-- คลิกขวาที่ Network adapter ที่เชื่อมต่อกับเครือข่ายเดียวกับ DNS Server และเลือก Properties
+
+   ![technitium-zone-3](/images/technitium/technitium-zone-3.png)
+
+- เลือก Network Adapter ที่เชื่อมต่อกับเครือข่ายเดียวกับ DNS Server
+
+   ![technitium-zone-4](/images/technitium/technitium-zone-4.png)
+
+- คลิกขวาและเลือก Properties
+
+   ![technitium-zone-5](/images/technitium/technitium-zone-5.png)
+
 - เลือก Internet Protocol Version 4 (TCP/IPv4) และคลิกปุ่ม Properties
-- เลือก Use the following DNS server addresses และกำหนดค่า DNS:
+
+   ![technitium-zone-6](/images/technitium/technitium-zone-6.png)
+
+- เลือก Use the following DNS server addresses และกำหนดค่า DNS ดังนี้
+
    - Preferred DNS server: ใส่ IP Address ของ DNS Server หลัก
+
    - Alternate DNS server: ใส่ IP Address ของ DNS Server สำรอง (ถ้ามี)
 
-### 2\. nslookup
+   ![technitium-zone-7](/images/technitium/technitium-zone-7.png)
 
-- เปิด Command Prompt แล้วพิมพ์คำสั่ง `nslookup` เพื่อเข้าสู่โหมดการค้นหา DNS
+- คลิกปุ่ม OK และ OK อีกครั้งเพื่อบันทึก
 
-```cmd
-C:\> nslookup
-Default Server: Unknown
-Address: 192.168.100.1
+### nslookup
 
->
-```
+เปิด Command Prompt แล้วพิมพ์คำสั่ง `nslookup` เพื่อเข้าสู่โหมดการค้นหา DNS
 
-- พิมพ์คำสั่งต่อไปนี้เพื่อเปลี่ยนเซิร์ฟเวอร์ DNS ที่ใช้ในการค้นหา
+   ```cmd
+   C:\> nslookup
+   Default Server: Unknown
+   Address: 192.168.100.1
 
-```cmd
-> server <nameserver>
-```
+   >
+   ```
 
-> [!NOTE]
->
-> แทนที่ `<nameserver>` ด้วยชื่อ FQDN ของเซิร์ฟเวอร์ DNS ของคุณ (เช่น `ns1.ctsurin.local`)
+พิมพ์คำสั่งต่อไปนี้เพื่อเปลี่ยนเซิร์ฟเวอร์ DNS ที่ใช้ในการค้นหา
 
-```cmd
-> server ns1.ctsurin.local
+   ```cmd
+   > server <nameserver>
+   ```
 
-Default Server: ns1.ctsurin.local
-Address: 10.11.254.10
-```
+   > [!NOTE]
+   >
+   > แทนที่ `<nameserver>` ด้วยชื่อ FQDN ของเซิร์ฟเวอร์ DNS ของคุณ (เช่น `ns1.ctsurin.local`)
 
-- หากผลลัพธ์ที่ได้คล้ายกับตัวอย่างข้างต้น แสดงว่าตั้งค่าถูกต้อง
+หากผลลัพธ์ที่ได้คล้ายกับตัวอย่าง แสดงว่าตั้งค่าถูกต้อง
+
+   ```cmd
+   > server ns1.ctsurin.local
+
+   Default Server: ns1.ctsurin.local
+   Address: 10.11.254.10
+   ```
+
+</Steps>
 
 ## วิธีแก้ไขปัญหา Non-existent domain
 
-- หากคุณได้รับข้อความแสดงข้อผิดพลาดว่า "Non-existent domain" แสดงว่า DNS Server ไม่สามารถค้นหาชื่อโดเมนที่ระบุได้
-- ให้ลองเปลี่ยน DNS Server ที่ใช้ในการค้นหา โดยใช้คำสั่ง `server <ip_address>` แทน
+หากคุณได้รับข้อความแสดงข้อผิดพลาดว่า "Non-existent domain" แสดงว่า DNS Server ไม่สามารถค้นหาชื่อโดเมนที่ระบุได้
 
-```cmd
-> server 10.11.254.10
+1. เปลี่ยน DNS Server ที่ใช้ในการค้นหา โดยใช้คำสั่ง `server <ip_address>` แทน
 
-Default Server:  [10.11.254.10]
-Address:  10.11.254.10
-```
+   ```cmd
+   > server 10.11.254.10
 
-- จากนั้นลองใช้คำสั่ง `server <nameserver>` อีกครั้ง
-- ผลลัพธ์ที่ควรได้
+   Default Server:  [10.11.254.10]
+   Address:  10.11.254.10
+   ```
 
-```cmd
-> server ns1.ctsurin.local
+2. จากนั้นใช้คำสั่ง `server <nameserver>` อีกครั้ง
 
-Default Server:  ns1.ctsurin.local
-Address:  10.11.254.10
-```
+3. ผลลัพธ์ที่ควรได้
+
+   ```cmd
+   > server ns1.ctsurin.local
+
+   Default Server:  ns1.ctsurin.local
+   Address:  10.11.254.10
+   ```
