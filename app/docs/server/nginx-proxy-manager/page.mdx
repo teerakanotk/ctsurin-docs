@@ -4,46 +4,17 @@ import { Steps } from "nextra/components";
 
 เครื่องมือจัดการ reverse proxy ที่สร้างขึ้นบนพื้นฐานของ Nginx โดยมีอินเทอร์เฟซแบบ Web GUI ที่ใช้งานง่าย ช่วยให้ผู้ใช้สามารถตั้งค่า reverse proxy, SSL certificates (เช่น Let's Encrypt), redirection, และ access control ได้สะดวก โดยไม่ต้องแก้ไขไฟล์ config ด้วยตนเอง
 
-## ขั้นตอนการติดตั้ง Docker และ Docker Compose
+## ความต้องการของระบบ
 
-ก่อนเริ่มการติดตั้ง Nginx Proxy Manager คุณต้องติดตั้ง Docker และ Docker Compose บนเครื่องของคุณก่อน
+ก่อนเริ่มต้นติดตั้ง Nginx Proxy Manager คุณต้องมี
 
-1. อัปเดตระบบ
+- Docker
 
-    ```bash
-    sudo apt-get update
-    sudo apt-get upgrade
-    ```
+- Docker compose
 
-2. เพิ่ม repository ของ Docker
+หากคุณไม่ได้ติดตั้ง Docker สามารถดูวิธีติดตั้งได้ที่นี่: [Click](/docs/server/docker)
 
-    ```bash
-    # Add Docker's official GPG key:
-    sudo apt-get update
-    sudo apt-get install ca-certificates curl
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-    # Add the repository to Apt sources:
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
-    ```
-
-    > [!note]
-    >
-    > คัดลอกข้อความด้านบนไปวางในเทอร์มินัลของคุณและกดปุ่ม `Enter` เพื่อเพิ่ม repository ของ Docker
-
-3. ติดตั้ง Docker
-
-    ```bash
-    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    ```
-
-## ติดตั้ง Nginx Proxy Manager ด้วย Docker Compose
+## ขั้นตอนการติดตั้ง
 
 <Steps>
 
@@ -56,7 +27,7 @@ cd nginx-proxy-manager
 
 ### สร้างไฟล์ docker-compose.yml
 
-คัดลอกข้อความด้านล่างแล้ววางในไฟล์ `docker-compose.yml` ที่คุณสร้างขึ้นในโฟลเดอร์ `nginx-proxy-manager`
+คัดลอกโค้ดด้านล่างนี้ แล้วนำไปวางในไฟล์ชื่อ `docker-compose.yml` ที่คุณเพิ่งสร้างขึ้นในโฟลเดอร์ `nginx-proxy-manager`
 
 ```bash filename="~/nginx-proxy-manager/docker-compose.yml"
 services:
@@ -82,7 +53,7 @@ services:
 sudo docker compose up -d
 ```
 
-ผลลัพธ์ที่ได้จะคล้ายกับด้านล่างนี้
+คุณจะเห็นผลลัพธ์คล้ายกับตัวอย่างด้านล่าง ซึ่งแสดงว่า Container กำลังถูกดาวน์โหลดและเริ่มต้น
 
 ```bash
 [+] Running 36/36
@@ -94,11 +65,13 @@ sudo docker compose up -d
 
 ### ตรวจสอบสถานะของ Container
 
+คุณสามารถตรวจสอบสถานะการทำงานของ Container ได้ด้วยคำสั่ง
+
 ```bash
 docker ps
 ```
 
-ผลลัพธ์ที่ได้จะคล้ายกับด้านล่างนี้
+หาก Nginx Proxy Manager ทำงานอยู่ คุณจะเห็นผลลัพธ์คล้ายกับตัวอย่างนี้
 
 ```bash
 CONTAINER ID   IMAGE                             COMMAND   CREATED          STATUS          PORTS                                                                                      NAMES
@@ -107,7 +80,7 @@ CONTAINER ID   IMAGE                             COMMAND   CREATED          STAT
 
 </Steps>
 
-## ล็อกอินและตั้งค่า Nginx Proxy Manager
+## ล็อกอินและตั้งค่า Nginx Proxy Manager ครั้งแรก
 
 1. เปิดเว็บเบราว์เซอร์และไปที่
 
@@ -118,18 +91,18 @@ CONTAINER ID   IMAGE                             COMMAND   CREATED          STAT
     ![nginx-proxy-manager-install-1](/images/nginx-proxy-manager/install-1.png)
 
 
-2. ชื่อผู้ใช้และรหัสผ่านเริ่มต้นสำหรับล็อกอิน
+2. ใช้ข้อมูลผู้ใช้และรหัสผ่านเริ่มต้นเพื่อล็อกอิน
 
     - Email address: admin@example.com
     - Password: changeme
 
-3. หลังจากล็อกอินสำเร็จ ระบบจะให้คุณเปลี่ยนอีเมลและรหัสผ่าน
+3. หลังจากล็อกอินสำเร็จ ระบบจะบังคับให้คุณเปลี่ยนอีเมลและรหัสผ่านเพื่อความปลอดภัย
 
-    3.1 เปลี่ยนอีเมล (Default email)
+    3.1 เปลี่ยนอีเมล
 
         ![nginx-proxy-manager-install-2](/images/nginx-proxy-manager/install-2.png)
 
-    3.2 เปลี่ยนรหัสผ่าน (Default password)
+    3.2 เปลี่ยนรหัสผ่าน
 
         ![nginx-proxy-manager-install-3](/images/nginx-proxy-manager/install-3.png)
 
