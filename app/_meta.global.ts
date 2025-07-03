@@ -9,25 +9,19 @@ export default {
     items: {
       server: {
         items: {
-          'proxmox-ve': {
+          "proxmox-ve": {
             title: "Proxmox VE",
             items: {
               installation: {
                 title: "Installation",
               },
-              repository: '',
+              repository: "",
               lxc: {
                 title: "LXC",
-                items: {
-                  'templates': {
-                    title: "Templates",
-                  },
-                  create:''
-                }
               },
-            }
+            },
           },
-          'technitium-dns': {
+          "technitium-dns": {
             title: "Technitium DNS",
             items: {
               installation: {
@@ -36,16 +30,16 @@ export default {
               zone: {
                 title: "Zone Management",
               },
-              'record-type': {
-                title: "Record Type"
+              "record-type": {
+                title: "Record Type",
               },
-              'record-create': {
-                title: 'Create Record'
+              "record-create": {
+                title: "Create Record",
               },
               dhcp: "",
-            }
+            },
           },
-          'nginx-proxy-manager': {
+          "nginx-proxy-manager": {
             title: "Nginx Proxy Manager",
           },
           zabbix: {
@@ -56,10 +50,10 @@ export default {
               },
               notification: {
                 title: "Notification",
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
       // firewall: {
       //   items: {
@@ -75,6 +69,6 @@ export default {
       //     }
       //   }
       // }
-    }
+    },
   },
 };
