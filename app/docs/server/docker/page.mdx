@@ -1,0 +1,91 @@
+import { Steps } from 'nextra/components'
+
+# Docker
+
+Docker คือ แพลตฟอร์ม Open Source ที่ช่วยให้คุณ สร้าง, จัดการ, และรันแอปพลิเคชันได้อย่างง่ายดายและสม่ำเสมอ โดยใช้แนวคิดที่เรียกว่า "Container" (คอนเทนเนอร์)
+
+ลองนึกภาพว่าคุณกำลังจะส่งสินค้าไปให้ลูกค้า แทนที่จะส่งแค่สินค้าเปล่าๆ ที่ลูกค้าต้องไปหาอุปกรณ์และคู่มือมาประกอบเอง คุณก็ใส่สินค้าทั้งหมด รวมถึงอุปกรณ์, คู่มือ, และเครื่องมือที่จำเป็นลงใน "ตู้คอนเทนเนอร์" ที่พร้อมใช้งานได้ทันที แล้วส่งไปให้ลูกค้า
+
+## ทำไมต้องใช้ Docker
+
+### "บรรจุ" แอปพลิเคชันพร้อมทุกอย่าง (Containerization)
+
+Docker จะรวบรวม แอปพลิเคชัน โค้ด ไลบรารี และทุกอย่างที่จำเป็น สำหรับการรันแอปพลิเคชันนั้นๆ (เช่น ค่าการตั้งค่า, dependency ต่างๆ) เข้าไว้ด้วยกันในหน่วยที่เรียกว่า "คอนเทนเนอร์"
+
+### ทำงานได้เหมือนกันทุกที่ (Portability)
+
+เมื่อแอปพลิเคชันถูกบรรจุอยู่ในคอนเทนเนอร์แล้ว ไม่ว่าคุณจะรันคอนเทนเนอร์นั้นบนเครื่องคอมพิวเตอร์ของคุณ (Development), เครื่องทดสอบ (Staging), หรือบนเซิร์ฟเวอร์จริง (Production) มันจะทำงานเหมือนกันเป๊ะๆ
+
+### ประหยัดทรัพยากรและรันได้เร็ว
+
+คอนเทนเนอร์ของ Docker แชร์ Kernel (หัวใจ) ของระบบปฏิบัติการหลัก ทำให้มีขนาดเล็กกว่ามาก กินทรัพยากรน้อยกว่า (CPU, RAM, Disk) และสามารถสตาร์ทหรือหยุดได้ในเวลาไม่กี่วินาที
+
+### แยกส่วนการทำงาน (Isolation)
+
+แต่ละคอนเทนเนอร์จะทำงานแยกจากกัน ทำให้แอปพลิเคชันหนึ่งจะไม่ไปรบกวนหรือมีผลกระทบกับแอปพลิเคชันอื่นๆ ที่รันอยู่บนเซิร์ฟเวอร์เดียวกัน
+
+### ปรับขนาดง่าย (Scalability)
+
+เมื่อต้องการเพิ่มประสิทธิภาพการทำงานของแอปพลิเคชัน (เช่น มีผู้ใช้งานเยอะขึ้น) คุณสามารถ สร้างคอนเทนเนอร์เพิ่มขึ้นมาหลายๆ ตัว ได้อย่างรวดเร็วและง่ายดาย
+
+### กระบวนการพัฒนาที่รวดเร็ว (CI/CD)
+
+ช่วยให้นักพัฒนาสามารถสร้าง ทดสอบ และส่งมอบแอปพลิเคชันได้เร็วขึ้นและมีความน่าเชื่อถือมากขึ้น
+
+## ระบบปฏิบัติการที่รองรับ (Ubuntu)
+
+- Ubuntu Oracular 24.10
+
+- Ubuntu Noble 24.04 (LTS)
+
+- Ubuntu Jammy 22.04 (LTS)
+
+> อ้างอิง: https://docs.docker.com/engine/install/
+
+## ขั้นตอนการติดตั้ง
+
+<Steps>
+
+### อัปเดตระบบ
+
+    ```bash
+    sudo apt-get update
+    sudo apt-get upgrade
+    ```
+
+### เพิ่ม repository ของ Docker
+
+คัดลอกข้อความด้านล่างและวางในเทอร์มินัลของคุณ จากนั้นกดปุ่ม `Enter`
+
+```bash
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+### ติดตั้ง Docker
+
+```bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+### ทดสอบการทำงาน
+
+ทดลองรันคอนเทนเนอร์ `hello-world` ของ Docker เพื่อตรวจสอบว่าการติดตั้งสำเร็จหรือไม่
+
+```bash
+sudo docker run hello-world
+```
+
+หากเห็นข้อความแสดงความยินดีจาก Docker ใน Terminal แสดงว่าการติดตั้งของคุณสมบูรณ์
+
+</Steps>
