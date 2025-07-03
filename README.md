@@ -1,5 +1,12 @@
 ## Changelog
 
+**2025-07-03**
+
+- Add Docker page
+- Renovate Nginx Proxy Manager page
+- Renovate Technitium DNS page
+- Renovate Zabbix page
+
 **2025-07-02**
 
 - Restructure the documentation to improve navigation
