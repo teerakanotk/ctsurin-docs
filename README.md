@@ -6,6 +6,7 @@
 - Renovate Nginx Proxy Manager page
 - Renovate Technitium DNS page
 - Renovate Zabbix page
+- Fix Home page background color
 
 **2025-07-02**
 

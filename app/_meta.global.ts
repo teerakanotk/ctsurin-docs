@@ -7,66 +7,61 @@ export default {
     title: "Documentation",
     type: "page",
     items: {
-      server: {
+      "proxmox-ve": {
+        title: "Proxmox VE",
         items: {
-          "proxmox-ve": {
-            title: "Proxmox VE",
-            items: {
-              installation: {
-                title: "Installation",
-              },
-              repository: "",
-              lxc: {
-                title: "LXC",
-              },
-            },
+          "getting-started": {
+            title: "Getting Started",
           },
-          "technitium-dns": {
-            title: "Technitium DNS",
-            items: {
-              installation: {
-                title: "Installation",
-              },
-              "dns-zone": {
-                title: "DNS Zone",
-              },
-              "dns-record": {
-                title: "DNS Record",
-              },
-              dhcp: "",
-            },
+          repository: "",
+          lxc: "",
+        },
+      },
+      docker: {
+        title: "Docker",
+      },
+      "technitium-dns": {
+        title: "Technitium DNS",
+        items: {
+          "getting-started": {
+            title: "Getting Started",
           },
-          docker: "",
-          "nginx-proxy-manager": {
-            title: "Nginx Proxy Manager",
+          zone: {
+            title: "Zone",
           },
-          zabbix: {
-            title: "Zabbix",
-            items: {
-              installation: {
-                title: "Installation",
-              },
-              notification: {
-                title: "Notification",
-              },
-            },
+          record: {
+            title: "Record",
+          },
+          dhcp: {
+            title: "DHCP",
           },
         },
       },
-      // firewall: {
-      //   items: {
-      //     'huawei-usg6530e': {
-      //       title: "Huawei USG6530E",
-      //     }
-      //   }
-      // },
-      // switch: {
-      //   items: {
-      //     'huawei-s5731-h': {
-      //       title: "Huawei S5731-H",
-      //     }
-      //   }
-      // }
+      "nginx-proxy-manager": {
+        title: "Nginx Proxy Manager",
+      },
+      zabbix: {
+        title: "Zabbix",
+        items: {
+          "getting-started": {
+            title: "Getting Started",
+          },
+        },
+      },
+      "huawei-usg6530e": {
+        title: "Huawei USG6530E",
+        items: {
+          "getting-started": {
+            title: "Getting Started",
+          },
+          "sec-policy": {
+            title: "Security Policy",
+          },
+          "nat-policy": {
+            title: "NAT Policy",
+          },
+        },
+      },
     },
   },
 };

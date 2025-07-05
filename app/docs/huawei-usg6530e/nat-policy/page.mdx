@@ -1,0 +1,82 @@
+import { Steps } from 'nextra/components'
+
+# NAT Policy
+
+NAT ย่อมาจาก Network Address Translation คือ เทคนิคที่ใช้ในการแปลงหมายเลข IP Address ของเครือข่ายภายใน (Private IP Address) ให้เป็น IP Address ที่ใช้งานบนอินเทอร์เน็ต (Public IP Address)
+
+## หลักการทำงาน
+
+1. ขาออก (Outbound): แพ็กเก็ตข้อมูลจากเครื่องภายในจะถูกส่งมาที่อุปกรณ์ NAT (มักจะเป็นเราเตอร์)
+
+2. การแปลงที่อยู่: อุปกรณ์ NAT จะทำการเปลี่ยน Source IP Address ของแพ็กเก็ตจาก Private IP ของเครื่องภายใน ให้เป็น Public IP Address ของเราเตอร์เอง (หรือ Public IP Address ที่กำหนดไว้สำหรับการทำ NAT)
+
+3. บันทึกตาราง NAT: อุปกรณ์ NAT จะบันทึกข้อมูลการแปลงนี้ไว้ในตาราง NAT (NAT Table) เพื่อจำว่าแพ็กเก็ตนี้มาจากเครื่อง Private IP ใด
+
+4. ส่งออกอินเทอร์เน็ต: แพ็กเก็ตที่ถูกแปลง IP แล้วจะถูกส่งออกไปยังอินเทอร์เน็ต
+
+5. ขากลับ (Inbound): เมื่อมีข้อมูลตอบกลับจากอินเทอร์เน็ตมาที่ Public IP Address ของเราเตอร์
+
+6. ค้นหาตาราง NAT: เราเตอร์จะตรวจสอบตาราง NAT เพื่อดูว่าแพ็กเก็ตที่เข้ามานี้ควรจะส่งต่อไปยัง Private IP Address ใดในเครือข่ายภายใน
+
+7. ส่งกลับเครื่องภายใน: เราเตอร์จะทำการเปลี่ยน Destination IP Address จาก Public IP ของตัวเอง ให้กลับไปเป็น Private IP Address ของเครื่องภายในที่ร้องขอข้อมูลนั้น และส่งแพ็กเก็ตไปยังเครื่องปลายทาง
+
+## ประเภทของ NAT
+
+### Static NAT (One-to-One NAT)
+
+    - หลักการ: เป็นการจับคู่ระหว่าง Private IP Address หนึ่งตัว กับ Public IP Address หนึ่งตัวแบบตายตัว (one-to-one mapping)
+
+    - การใช้งาน: นิยมใช้กับเซิร์ฟเวอร์ที่อยู่ในเครือข่ายภายใน (เช่น Web Server, Mail Server) ที่ต้องการให้คนภายนอกสามารถเข้าถึงได้โดยตรง โดยผู้ดูแลระบบจะกำหนด Public IP Address เฉพาะสำหรับเซิร์ฟเวอร์นั้นๆ
+
+### Dynamic NAT (Many-to-Many NAT หรือ NAT Pool)
+
+    - หลักการ: เป็นการแปลง Private IP Address หลายๆ ตัว ให้เป็น Public IP Address หลายๆ ตัวเช่นกัน โดยจะใช้ Public IP Address จากกลุ่มที่กำหนดไว้ (Pool of Public IP Addresses)
+
+    - การใช้งาน: เหมาะสำหรับองค์กรที่มี Public IP Address จำนวนหนึ่ง และต้องการให้เครื่องภายในสามารถออกอินเทอร์เน็ตได้แบบสุ่ม โดย IP ที่ใช้จะถูกดึงมาจาก Pool ที่มีอยู่
+
+### Port Address Translation (PAT) หรือ NAT Overload (Many-to-One NAT)
+
+    - หลักการ: เป็นรูปแบบที่ใช้งานแพร่หลายที่สุดในปัจจุบัน เนื่องจากสามารถแปลง Private IP Address จำนวนมาก (หลายร้อยหลายพันเครื่อง) ให้ใช้ Public IP Address เพียงแค่ตัวเดียว ในการออกสู่อินเทอร์เน็ต โดยอาศัยการแปลงหมายเลขพอร์ต (Port Number) ร่วมด้วย
+
+    - การทำงาน: เมื่อหลายๆ เครื่องในเครือข่ายภายในต้องการออกอินเทอร์เน็ตผ่าน Public IP เดียวกัน อุปกรณ์ NAT จะทำการแปลง Source IP และ Source Port ของแต่ละเครื่องให้เป็น Public IP เดียวกัน แต่ใช้ Source Port ที่แตกต่างกัน (อุปกรณ์ NAT จะจัดการหมายเลข Port ที่ไม่ซ้ำกัน) เพื่อให้สามารถแยกแยะได้ว่าแพ็กเก็ตที่ตอบกลับมาเป็นของเครื่องภายในเครื่องใด
+
+    - การใช้งาน: ครัวเรือนทั่วไป, ออฟฟิศขนาดเล็กถึงขนาดกลาง, โดยทั่วไปเมื่อคุณเชื่อมต่ออินเทอร์เน็ตผ่านเราเตอร์ Wi-Fi ที่บ้าน ก็จะมีการทำ PAT
+
+## ขั้นตอนการเพิ่ม NAT Policy
+
+<Steps>
+
+### ไปที่เมนู Policy > NAT Policy
+
+![nat-policy-1](/images/huawei-usg6530e/nat-policy-1.png)
+
+### ที่แท็บ NAT Policy
+
+คลิก Add จะมีป๊อปอัพหน้าต่างเด้งขึ้นมา
+
+![nat-policy-2](/images/huawei-usg6530e/nat-policy-2.png)
+
+### อธิบาย
+
+Name: ชื่อของนโยบาย NAT (กำหนดให้สื่อความหมาย)
+NAT Type: ประเภทของการแปลง IP
+    [ / ] NAT (IPv4 to IPv4): แปลงจาก IPv4 เป็น IPv4
+    [   ] NAT64: แปลงจาก IPv4 เป็น IPv6
+    [   ] NAT66: แปลงจาก IPv6 เป็น IPv6
+NAT Mode: รูปแบบการแปลง Address (เช่น Source NAT, Destination NAT)
+Source Zone: โซนความปลอดภัยต้นทางของทราฟฟิก (เช่น trust zone)
+Destination Type: ประเภทของปลายทาง
+    [ / ] Outbound Interface: เลือกอินเทอร์เฟซที่ใช้ในการออกอินเทอร์เน็ต (เช่น อินเทอร์เฟซ WAN)
+Source Address: ที่อยู่ IP หรือช่วง IP ต้นทางของทราฟฟิกภายใน (Private IP)
+Destination Address: ที่อยู่ IP หรือช่วง IP ปลายทางของทราฟฟิกภายนอก (Public IP)
+Service: โปรโตคอลหรือบริการที่ใช้งาน (เช่น HTTP, HTTPS, Any)
+
+Translated Data Packet: (ส่วนนี้จะกำหนดว่า IP ต้นทางจะถูกแปลงเป็นอะไร)
+    Source Address Translated To:
+        [ / ] Outbound interface: แปลง Source IP ของทราฟฟิกให้เป็น IP ของอินเทอร์เฟซขาออก
+
+> - NAT คือการแปลงจาก IPv4 เป็น IPv4
+> - NAT64 คือการแปลงจาก IPv4 เป็น IPv6
+> - NAT66 คือการแปลงจาก IPv6 เป็น IPv6
+
+</Steps>
